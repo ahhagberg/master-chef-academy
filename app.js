@@ -42,7 +42,7 @@ const lesson2 = {
   challenge:'Produce a tightly rolled, evenly cooked ballotine with a clean basil mousseline center; glossy pasta coated—not drowned—in Parmesan velouté; and a composed restaurant-style plate.',
   shopping:{
     'Chicken & cured meat':['6 large boneless skinless chicken breasts, about 8 oz each','12 thin slices prosciutto'],
-    'Produce':['3 packed cups basil leaves, divided','2 cups frozen petite peas','2 lemons','2 shallots','2 garlic cloves'],
+    'Produce':['3 packed cups basil leaves, divided','2 cups frozen petite peas','2 lemons','2 shallots'],
     'Dairy & eggs':['2 cups heavy cream, very cold','2 large egg whites','10 oz Parmigiano-Reggiano, finely grated','12 tbsp unsalted butter'],
     'Pasta & pantry':['1½ lb bronze-cut mezzi rigatoni','⅓ cup shelled unsalted pistachios','4 tbsp extra-virgin olive oil','3 cups low-sodium chicken stock','¾ cup dry white wine','⅓ cup all-purpose flour','Kosher salt','White pepper','Black pepper','Neutral oil','Plastic wrap','Kitchen twine optional']
   },
