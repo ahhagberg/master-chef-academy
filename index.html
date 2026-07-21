@@ -31,6 +31,7 @@
         <div class="nav-section-label">Your academy</div>
         <button class="nav-link" data-view="skills"><span class="nav-icon">✦</span><span>Skills</span></button>
         <button class="nav-link" data-view="journal"><span class="nav-icon">□</span><span>Kitchen Journal</span></button>
+        <button class="nav-link" data-view="stores"><span class="nav-icon">⌖</span><span>Find Ingredients</span></button>
       </nav>
 
       <div class="sidebar-card">
@@ -189,6 +190,46 @@
         </div>
       </section>
 
+
+      <section class="view" id="stores">
+        <div class="content-narrow">
+          <div class="page-intro">
+            <span class="eyebrow dark">Shopping assistant</span>
+            <h2>Find ingredients nearby</h2>
+            <p>Enter an address, city or ZIP code to find nearby grocery and specialty stores for the selected lesson. Store inventory is not guaranteed until you verify it with the retailer.</p>
+          </div>
+
+          <div class="store-finder-card">
+            <div class="store-form-grid">
+              <label>Address, city or ZIP code
+                <input id="storeAddress" type="text" autocomplete="street-address" placeholder="Example: 55446 or Plymouth, MN" />
+              </label>
+              <label>Recipe
+                <select id="storeLesson">
+                  <option value="lesson-1">Lesson 1 · Pan-Seared Chicken</option>
+                  <option value="lesson-2" selected>Lesson 2 · Chicken Ballotine</option>
+                </select>
+              </label>
+              <label>Search radius
+                <select id="storeRadius">
+                  <option value="4828">3 miles</option>
+                  <option value="8047" selected>5 miles</option>
+                  <option value="16093">10 miles</option>
+                  <option value="24140">15 miles</option>
+                </select>
+              </label>
+              <button class="button store-search-button" id="findStores" type="button">Find nearby stores</button>
+            </div>
+            <p class="store-privacy">The search runs only when you press the button. Your address is sent to OpenStreetMap's geocoding service and is not saved by this site. A city or ZIP code provides more privacy.</p>
+          </div>
+
+          <div class="store-shopping-preview" id="storeShoppingPreview"></div>
+          <div class="store-status" id="storeStatus" aria-live="polite"></div>
+          <div class="store-results" id="storeResults"></div>
+          <p class="osm-attribution">Store locations and geocoding: © OpenStreetMap contributors. Nearby results may be incomplete or outdated.</p>
+        </div>
+      </section>
+
       <footer class="site-footer"><span>Master Chef Academy</span><span>Built for Andrew's kitchen</span></footer>
     </main>
   </div>
@@ -212,5 +253,10 @@
   </dialog>
 
   <script src="app.js"></script>
+  <script>
+    // Keep the signature ballotine garlic-free, including older cached recipe data.
+    lesson2.shopping.Produce = lesson2.shopping.Produce.filter(item => item !== '2 garlic cloves');
+    renderLesson('lesson-2', lesson2);
+  </script>
 </body>
 </html>

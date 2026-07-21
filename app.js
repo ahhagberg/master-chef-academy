@@ -421,7 +421,7 @@ function renderLesson(id,data){
     </div>
     <div class="lesson-tabs">${[['challenge','Challenge'],['shop','Shopping'],['mise','Mise en place'],['timeline','Timeline'],['cook','Instructions'],['rescue','Troubleshooting'],['plate','Plating'],['score','Scoring']].map(x=>`<button data-scroll="${id}-${x[0]}">${x[1]}</button>`).join('')}</div>
     <section class="lesson-section" id="${id}-challenge"><h3>The Challenge</h3><div class="callout">${data.challenge}</div><h4>Chef standard</h4><p>Every component must be properly seasoned, cooked to its intended texture and placed with purpose. Taste repeatedly. Clean the plate rim before service.</p></section>
-    <section class="lesson-section" id="${id}-shop"><h3>Shopping List</h3><div class="paper-card">${ingredientHTML(data.shopping,id)}</div></section>
+    <section class="lesson-section" id="${id}-shop"><div class="section-heading-row"><h3>Shopping List</h3><button class="button secondary compact" data-find-stores="${id}" type="button">Find these ingredients nearby</button></div><div class="paper-card">${ingredientHTML(data.shopping,id)}</div></section>
     <section class="lesson-section" id="${id}-mise"><h3>Equipment & Mise en Place</h3><div class="two-col"><div class="paper-card"><h4>Equipment</h4><ul class="checklist">${data.equipment.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="paper-card"><h4>Before the clock starts</h4><ul class="checklist">${data.mise.map(x=>`<li>${transformMeasurements(x,state.servings,state.units)}</li>`).join('')}</ul></div></div></section>
     <section class="lesson-section" id="${id}-timeline"><h3>Master Timeline</h3><p class="lede">Read this entire sequence before cooking. The second column is your main task; the third shows what should happen at the same time.</p><div class="timeline">${timeline}</div></section>
     <section class="lesson-section" id="${id}-cook"><h3>Detailed Instructions</h3><p class="lede">Follow the action paragraph first, then use the open Chef checkpoints to judge the food with your eyes, hands, nose, ears and—only when safe—your palate. Time is a guide; the readiness cues decide when you move on.</p><div class="step-list">${steps}</div></section>
@@ -443,7 +443,7 @@ function setMenu(open){sidebar.classList.toggle('open',open);overlay.hidden=!ope
 function openView(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));
   document.querySelectorAll('.nav-link').forEach(n=>n.classList.toggle('active',n.dataset.view===id));
-  document.getElementById('pageTitle').textContent=id==='dashboard'?'Dashboard':id==='skills'?'Skills':id==='journal'?'Kitchen Journal':lessons[id]?.title||'Master Chef Academy';
+  document.getElementById('pageTitle').textContent=id==='dashboard'?'Dashboard':id==='skills'?'Skills':id==='journal'?'Kitchen Journal':id==='stores'?'Find Ingredients':lessons[id]?.title||'Master Chef Academy';
   window.scrollTo({top:0,behavior:'instant'});
   setMenu(false);
 }
@@ -452,6 +452,7 @@ document.addEventListener('click',e=>{
   const nav=e.target.closest('[data-view]');if(nav)openView(nav.dataset.view);
   const scroll=e.target.closest('[data-scroll]');if(scroll)document.getElementById(scroll.dataset.scroll)?.scrollIntoView({behavior:'smooth',block:'start'});
   const kitchen=e.target.closest('[data-kitchen]');if(kitchen)startKitchen(kitchen.dataset.kitchen);
+  const findStores=e.target.closest('[data-find-stores]');if(findStores){document.getElementById('storeLesson').value=findStores.dataset.findStores;renderStoreShoppingPreview();openView('stores');}
   const serving=e.target.closest('[data-serving]');
   if(serving){
     const id=serving.dataset.lesson;
@@ -500,3 +501,115 @@ document.getElementById('saveJournal').addEventListener('click',()=>{
 });
 const saved=loadJournal();
 if(saved){document.getElementById('journalLesson').value=saved.lesson;document.getElementById('wentWell').value=saved.wentWell;document.getElementById('changeNext').value=saved.changeNext;document.getElementById('journalScore').value=saved.score}
+
+
+const storeAddress=document.getElementById('storeAddress');
+const storeLesson=document.getElementById('storeLesson');
+const storeRadius=document.getElementById('storeRadius');
+const storeStatus=document.getElementById('storeStatus');
+const storeResults=document.getElementById('storeResults');
+const storeShoppingPreview=document.getElementById('storeShoppingPreview');
+const findStoresButton=document.getElementById('findStores');
+
+const specialtyTerms={
+  'lesson-1':['boneless skinless chicken breasts','Yukon Gold potatoes','fresh green beans','Dijon mustard','low-sodium chicken stock'],
+  'lesson-2':['thin sliced prosciutto','Parmigiano-Reggiano','bronze-cut mezzi rigatoni','fresh basil','unsalted pistachios','dry white wine','white pepper']
+};
+
+function escapeHTML(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+function storeLessonData(){return lessons[storeLesson.value]||lesson2}
+function flattenedShopping(data){return Object.values(data.shopping).flat()}
+function renderStoreShoppingPreview(){
+  const id=storeLesson.value,data=storeLessonData(),state=lessonState[id];
+  const items=flattenedShopping(data).map(item=>transformMeasurements(item,state.servings,state.units));
+  storeShoppingPreview.innerHTML=`<div class="paper-card store-list-card"><div><span class="eyebrow dark">Current list</span><h3>${escapeHTML(data.title)}</h3><p>${state.servings} servings · ${items.length} shopping items</p></div><div class="store-item-chips">${items.map(item=>`<span>${escapeHTML(item)}</span>`).join('')}</div></div>`;
+}
+
+function haversineMiles(lat1,lon1,lat2,lon2){
+  const r=3958.8,toRad=n=>n*Math.PI/180;
+  const dLat=toRad(lat2-lat1),dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2*r*Math.asin(Math.sqrt(a));
+}
+function addressFromTags(tags={}){
+  const street=[tags['addr:housenumber'],tags['addr:street']].filter(Boolean).join(' ');
+  const locality=[tags['addr:city'],tags['addr:state'],tags['addr:postcode']].filter(Boolean).join(', ');
+  return [street,locality].filter(Boolean).join(', ')||tags['contact:address']||'';
+}
+function storeCoverage(tags={}){
+  const shop=tags.shop||'',name=(tags.name||tags.brand||'').toLowerCase();
+  const major=/target|walmart|whole foods|cub|lund|byerly|hy-vee|aldi|trader joe|costco|sam's club|fresh thyme|kroger|publix|safeway|meijer|market basket|wegmans/.test(name);
+  if(shop==='supermarket'||shop==='grocery'||major)return {rank:1,label:'Likely one-stop grocery',coverage:['Protein','Produce','Dairy','Pantry','Specialty items may vary']};
+  if(shop==='deli'||shop==='cheese')return {rank:2,label:'Best for deli & cheese',coverage:['Prosciutto','Parmigiano-Reggiano','Specialty cheese']};
+  if(shop==='butcher')return {rank:2,label:'Best for protein',coverage:['Chicken','Custom trimming','Meat counter help']};
+  if(shop==='greengrocer')return {rank:3,label:'Best for produce',coverage:['Fresh herbs','Vegetables','Lemons']};
+  if(shop==='wine'||shop==='alcohol')return {rank:3,label:'Best for wine',coverage:['Dry white wine']};
+  return {rank:4,label:'Possible supplemental stop',coverage:['Basic groceries','Verify specialty items']};
+}
+function mapsDirectionsURL(store){
+  const destination=store.lat&&store.lon?`${store.lat},${store.lon}`:[store.name,store.address].filter(Boolean).join(' ');
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+}
+function mapsSearchURL(query,address){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${query} near ${address}`)}`}
+function webStockURL(store,lessonId){
+  const terms=specialtyTerms[lessonId].slice(0,3).join(' ');
+  return `https://www.google.com/search?q=${encodeURIComponent(`${store.name} ${terms} availability`)}`;
+}
+function fallbackStoreLinks(address,lessonId){
+  const queries=lessonId==='lesson-2'?['grocery store','Italian deli','cheese shop','butcher shop','wine store']:['grocery store','butcher shop','produce market'];
+  return `<div class="fallback-searches"><h3>Open nearby searches</h3><p>The live store lookup did not complete, but these map searches still use your entered location.</p><div>${queries.map(q=>`<a class="button secondary" target="_blank" rel="noopener" href="${mapsSearchURL(q,address)}">${escapeHTML(q)}</a>`).join('')}</div></div>`;
+}
+function renderStoreResults(stores,address,lessonId){
+  if(!stores.length){
+    storeResults.innerHTML=`<div class="paper-card"><h3>No mapped grocery stores found in that radius</h3><p>Try a larger radius or use the map searches below.</p>${fallbackStoreLinks(address,lessonId)}</div>`;
+    return;
+  }
+  const best=stores.filter(s=>s.coverage.rank===1).length;
+  storeResults.innerHTML=`<div class="store-result-summary"><div class="metric"><span>Stores found</span><strong>${stores.length}</strong></div><div class="metric"><span>Likely one-stop options</span><strong>${best}</strong></div><div class="metric"><span>Inventory status</span><strong>Verify</strong></div></div><div class="store-grid">${stores.map((store,index)=>`<article class="store-card ${store.coverage.rank===1?'recommended':''}"><div class="store-card-top"><span class="store-rank">${index+1}</span><div><span class="store-type">${escapeHTML(store.coverage.label)}</span><h3>${escapeHTML(store.name)}</h3><p>${escapeHTML(store.address||'Address unavailable')}</p></div><strong>${store.distance.toFixed(1)} mi</strong></div><div class="store-coverage">${store.coverage.coverage.map(x=>`<span>${escapeHTML(x)}</span>`).join('')}</div><div class="store-actions"><a class="button" target="_blank" rel="noopener" href="${mapsDirectionsURL(store)}">Directions</a><a class="button secondary" target="_blank" rel="noopener" href="${webStockURL(store,lessonId)}">Check specialty stock</a></div></article>`).join('')}</div><div class="paper-card store-disclaimer"><h3>What this result means</h3><p>“Likely one-stop” is based on the location being mapped as a supermarket or full grocery store. It does not prove that every ingredient is currently in stock. Call or check the retailer's online catalog for prosciutto, Parmigiano-Reggiano, bronze-cut pasta and other specialty items before leaving.</p></div>`;
+}
+async function geocodeAddress(address){
+  const cacheKey=`mca-geocode:${address.trim().toLowerCase()}`;
+  try{const cached=JSON.parse(sessionStorage.getItem(cacheKey)||'null');if(cached)return cached}catch{}
+  const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=${encodeURIComponent(address)}`;
+  const response=await fetch(url,{headers:{'Accept':'application/json'}});
+  if(!response.ok)throw new Error('Address lookup failed');
+  const results=await response.json();
+  if(!results.length)throw new Error('Address not found');
+  const result={lat:Number(results[0].lat),lon:Number(results[0].lon),displayName:results[0].display_name};
+  try{sessionStorage.setItem(cacheKey,JSON.stringify(result))}catch{}
+  return result;
+}
+async function queryNearbyStores(lat,lon,radius){
+  const query=`[out:json][timeout:25];(nwr["shop"~"^(supermarket|grocery|convenience|deli|cheese|butcher|greengrocer|wine|alcohol)$"](around:${radius},${lat},${lon});nwr["amenity"="marketplace"](around:${radius},${lat},${lon}););out center tags;`;
+  const response=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:`data=${encodeURIComponent(query)}`});
+  if(!response.ok)throw new Error('Nearby store service unavailable');
+  const data=await response.json(),seen=new Set(),stores=[];
+  for(const element of data.elements||[]){
+    const tags=element.tags||{},name=tags.name||tags.brand;
+    const storeLat=Number(element.lat??element.center?.lat),storeLon=Number(element.lon??element.center?.lon);
+    if(!name||!Number.isFinite(storeLat)||!Number.isFinite(storeLon))continue;
+    const key=`${name.toLowerCase()}|${storeLat.toFixed(4)}|${storeLon.toFixed(4)}`;
+    if(seen.has(key))continue;seen.add(key);
+    stores.push({name,address:addressFromTags(tags),lat:storeLat,lon:storeLon,distance:haversineMiles(lat,lon,storeLat,storeLon),coverage:storeCoverage(tags)});
+  }
+  return stores.sort((a,b)=>a.coverage.rank-b.coverage.rank||a.distance-b.distance).slice(0,18);
+}
+async function findNearbyStores(){
+  const address=storeAddress.value.trim(),lessonId=storeLesson.value;
+  if(!address){storeStatus.textContent='Enter an address, city or ZIP code first.';storeAddress.focus();return}
+  findStoresButton.disabled=true;findStoresButton.textContent='Finding stores…';storeStatus.textContent='Locating your search area…';storeResults.innerHTML='';
+  try{
+    const location=await geocodeAddress(address);
+    storeStatus.textContent=`Searching near ${location.displayName}…`;
+    const stores=await queryNearbyStores(location.lat,location.lon,Number(storeRadius.value));
+    renderStoreResults(stores,address,lessonId);
+    storeStatus.textContent=`Results ranked by likely ingredient coverage, then distance from ${location.displayName}.`;
+  }catch(error){
+    storeStatus.textContent=error.message||'The store search could not be completed.';
+    storeResults.innerHTML=fallbackStoreLinks(address,lessonId);
+  }finally{findStoresButton.disabled=false;findStoresButton.textContent='Find nearby stores'}
+}
+findStoresButton.addEventListener('click',findNearbyStores);
+storeAddress.addEventListener('keydown',e=>{if(e.key==='Enter')findNearbyStores()});
+storeLesson.addEventListener('change',renderStoreShoppingPreview);
+renderStoreShoppingPreview();
