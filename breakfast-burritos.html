@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071a33">
+  <title>Family Breakfast Burritos | Master Chef Academy</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root{--navy:#071a33;--gold:#d4af37;--cream:#f6f5f2;--ink:#1b2940;}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+    .academy-top{background:var(--navy);color:white;padding:1rem max(20px,calc((100vw - 1120px)/2));display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .academy-top a{color:white;text-decoration:none}.academy-brand{font-weight:800;letter-spacing:.06em}.academy-brand em{color:var(--gold);font-style:normal}
+    .page{max-width:1120px;margin:0 auto;padding:24px 20px 70px}
+    .recipe-hero{background:linear-gradient(125deg,#071a33,#17395c);color:white;border-radius:20px;padding:32px;margin-bottom:22px}
+    .eyebrow{font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);font-weight:800}
+    h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.1;margin:12px 0}
+    h2{margin:0 0 12px;font-size:1.5rem}h3{margin:0 0 8px;font-size:1.1rem}
+    .recipe-hero p{max-width:70ch;color:#edf1f6;line-height:1.65}
+    .facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.fact{border:1px solid #ffffff55;border-radius:12px;padding:10px 14px}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:24px;align-items:start}
+    .panel{background:white;border:1px solid #dfe4e9;border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 3px 12px #091b3210}
+    .panel p,.panel li{line-height:1.65}.panel ol,.panel ul{padding-left:22px}
+    .subtle{color:#59677b}.tag{display:inline-block;background:#f1e5bb;color:#45380c;border-radius:99px;font-size:.79rem;font-weight:700;padding:5px 10px}
+    .callout{border-left:4px solid var(--gold);padding:12px 16px;background:#fbf7e8;border-radius:8px;line-height:1.6}
+    .controls{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:20px}
+    button,select{font:inherit}.btn{background:var(--gold);border:0;border-radius:10px;padding:11px 16px;color:#101b2d;font-weight:800;cursor:pointer}
+    .btn.outline{background:transparent;border:1px solid var(--gold);color:var(--gold)}.btn:disabled{opacity:.45;cursor:default}
+    .stepper{display:flex;align-items:center;gap:12px}.stepper button{border:1px solid #ccd6df;background:white;border-radius:8px;padding:5px 12px;cursor:pointer}
+    .stepper strong{min-width:22px;text-align:center}select{padding:8px;border-radius:8px;border:1px solid #cdd6e0}
+    .check{display:flex;gap:10px;align-items:start;margin:10px 0;line-height:1.4}.check input{margin-top:5px;accent-color:#17395c}
+    .method-step{padding:18px 0;border-top:1px solid #e2e7ec}.method-step:first-child{border-top:0}
+    .method-step header{display:flex;align-items:center;gap:12px;margin-bottom:10px}.number{display:grid;place-items:center;min-width:32px;height:32px;border-radius:50%;background:#102b47;color:white;font-weight:800}
+    .method-step small{color:#647087}.method-step p{margin:8px 0}
+    details{margin-top:12px;border:1px solid #e2e7ec;border-radius:10px;padding:10px 12px;background:#fafbfd}
+    details summary{cursor:pointer;font-weight:750}details p{margin:5px 0}
+    .sauce{padding:16px;background:#f8fafc;border:1px solid #dde4ec;border-radius:12px;margin-top:12px}
+    .score-table{width:100%;border-collapse:collapse}.score-table th,.score-table td{border-bottom:1px solid #e4e7ed;padding:9px;text-align:left}
+    .section-links{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+    .section-links a{font-size:.9rem;padding:8px 12px;background:white;border:1px solid #dde3e9;border-radius:9px;color:#233955;text-decoration:none}
+    .timeline{display:grid;gap:10px}.timeline div{display:grid;grid-template-columns:100px 1fr;gap:12px;border-bottom:1px solid #e4e7ed;padding-bottom:9px}
+    .timeline strong{color:#122a44}
+    dialog{border:none;border-radius:18px;width:min(640px,94vw);max-height:90vh;box-shadow:0 24px 80px #0006;padding:0}
+    dialog::backdrop{background:#071a33bb}
+    .kitchen-header{background:var(--navy);color:white;padding:20px 24px}.kitchen-header p{color:#cbd7e6}
+    .kitchen-content{padding:24px}.kitchen-actions{display:flex;align-items:center;gap:10px;justify-content:space-between;border-top:1px solid #dde4ea;padding:14px 24px}
+    .kitchen-actions button{padding:8px 12px;border-radius:8px;border:1px solid #b3c2cf;background:white;cursor:pointer}
+    .kitchen-actions button.primary{background:var(--gold);border-color:var(--gold);font-weight:800}
+    .kitchen-progress{height:6px;background:#d9dfeb}.kitchen-progress div{height:100%;background:var(--gold)}
+    .mobile-action{display:none}
+    @media(max-width:800px){.layout{grid-template-columns:1fr}.recipe-hero{padding:22px}.page{padding:14px 14px 45px}.academy-top{padding:13px 16px}.panel{padding:17px}.mobile-action{display:block}}
+    @media print{.academy-top,.controls,.section-links,.btn,.kitchen-actions{display:none!important}body{background:white}.layout{display:block}.panel,.recipe-hero{box-shadow:none;break-inside:avoid}.recipe-hero{color:black;background:white;border:1px solid #999}.recipe-hero p{color:black}}
+  </style>
+</head>
+<body>
+<header class="academy-top"><a class="academy-brand" href="index.html">MASTER CHEF <em>ACADEMY</em></a><a href="index.html">← Back to Academy</a></header>
+<main class="page">
+  <section class="recipe-hero">
+    <span class="eyebrow">Family recipe · Tested November 1, 2026 · Revision 2 planned</span>
+    <h1>Bacon & Sausage Breakfast Burritos</h1>
+    <p>Four hearty Ninja flat-top burritos with crisp bacon, plenty of browned sausage, tender eggs, grated sharp cheddar and a golden tortilla. We learned from our first batch: <strong>skip the soft hash browns, increase the sausage, and keep sauce subtle.</strong></p>
+    <div class="facts"><div class="fact"><strong>35–40 min</strong><br><small>Start to finish</small></div><div class="fact"><strong id="heroYield">4 burritos</strong><br><small>Family batch</small></div><div class="fact"><strong>2 / 5</strong><br><small>Skill level</small></div><div class="fact"><strong>350°F</strong><br><small>Starting griddle heat</small></div></div>
+    <div class="controls">
+      <span>How many burritos?</span>
+      <div class="stepper"><button id="minus" aria-label="Reduce batch">−</button><strong id="servings">4</strong><button id="plus" aria-label="Increase batch">+</button></div>
+      <label>Units <select id="units"><option value="us">US</option><option value="metric">Metric</option></select></label>
+      <button class="btn" id="startKitchen" type="button">Start Kitchen Mode</button>
+      <button class="btn outline" id="printRecipe" type="button">Print</button>
+    </div>
+  </section>
+  <nav class="section-links" aria-label="Recipe sections"><a href="#shopping">Shopping</a><a href="#mise">Prep</a><a href="#timeline">Timeline</a><a href="#steps">Cooking</a><a href="#sauces">Sauces</a><a href="#notes">Test notes</a><a href="#troubleshooting">Troubleshooting</a></nav>
+  <div class="layout">
+    <div>
+      <section class="panel" id="shopping"><h2>Shopping list</h2><p class="subtle">Scaling works from 2–12 burritos. Check off what you already have.</p><div id="shoppingItems"></div></section>
+      <section class="panel" id="mise"><h2>Mise en place</h2>
+        <ul><li>Preheat Ninja flat-top to <strong>350°F</strong>. Set aside a cooler zone for the eggs if possible.</li><li>Shred sharp cheddar from the block; measure sausage into four equal portions for the original recipe.</li><li>Whisk eggs with a little salt and black pepper; remember that bacon and sausage already bring salt.</li><li>Set out plates, spatulas, a paper-towel-lined bacon plate, and tortillas.</li><li>Mix the sauce before cooking, but <strong>serve it separately</strong> so the burritos don't get soggy.</li></ul>
+        <div class="callout">The flat-top does not need olive-oil cooking spray for bacon or sausage. Save a thin film of rendered bacon fat for the eggs and tortilla toast.</div>
+      </section>
+      <section class="panel" id="timeline"><h2>Master timeline</h2><div class="timeline">
+        <div><strong>0:00–0:07</strong><span>Grate cheese, whisk eggs, mix optional sauce, heat Ninja to 350°F.</span></div>
+        <div><strong>0:07–0:17</strong><span>Cook bacon until crisp; brown sausage alongside or immediately after, until 160°F for pork.</span></div>
+        <div><strong>0:17–0:23</strong><span>Reduce to 300–325°F, softly scramble eggs, chop bacon.</span></div>
+        <div><strong>0:23–0:28</strong><span>Warm tortillas and fill all four evenly; keep sauces out.</span></div>
+        <div><strong>0:28–0:34</strong><span>Griddle-toast seam-side down at ~350°F, 2–3 minutes per side.</span></div>
+        <div><strong>0:34–0:35</strong><span>Rest, slice, taste plain, then add a little sauce if desired.</span></div>
+      </div></section>
+      <section class="panel" id="steps"><h2>Detailed cooking instructions</h2><p class="subtle">Time is a guide. Use color, texture, and temperature to decide when to advance.</p><div id="method"></div></section>
+      <section class="panel" id="sauces"><h2>Sauce laboratory</h2><p><strong>Finding from batch 1:</strong> salsa verde plus straight sour cream overpowered the eggs and meat. Cholula alone was fine. Test very small amounts of sauce on the side, not inside the burrito.</p>
+        <div class="sauce"><span class="tag">First choice</span><h3>Light Gordita-style spicy ranch</h3><p>The adapted version of our previous Cheesy Gordita Crunch ranch. It uses <strong>much less sour cream</strong> than the original and no jalapeño juice.</p><div id="ranchAmounts"></div><p>Whisk until smooth. Add a few drops of water or milk to make it drizzle. Rest in the refrigerator 15–30 minutes when possible. Start with <strong>2 teaspoons per burrito</strong> for dipping, not flooding.</p></div>
+        <div class="sauce"><h3>Cholula garlic mayo</h3><div id="mayoAmounts"></div><p>Whisk smooth. Start with 1 teaspoon on the cut side of each burrito. No sour cream, and the hot sauce gives it just enough lift.</p></div>
+        <div class="sauce"><h3>Simple Cholula</h3><p>Literally a few dashes, the one you already thought was fine. No prep, almost no extra calories, and the filling stays the star.</p></div>
+        <details><summary>Original Gordita Crunch spicy ranch (for reference)</summary><p>120 g mayonnaise, 60 g sour cream, 20–30 g milk/buttermilk, 8–10 g ranch seasoning, 2 g paprika, 1 g chili/chipotle powder, 0.5–1 g cayenne and 1 g sugar. Optional hot sauce and a tiny squeeze of lime. <strong>Original correction: no jalapeño juice.</strong> This is the stronger historical sauce, <em>not</em> the adapted burrito version.</p></details>
+      </section>
+      <section class="panel" id="notes"><h2>Kitchen journal · First batch → next batch</h2>
+        <p><span class="tag">Actual test · Nov 1</span> First batch: 8 eggs, 8 bacon slices, 4 oz breakfast sausage, 2 oz cheddar, homemade shredded hash browns and four 10-inch tortillas. The potatoes were not dry enough and did not crisp especially well. Burritos were a little underfilled; salsa verde and sour cream obscured the filling. Cholula worked acceptably.</p>
+        <p><span class="tag">Proposed next test</span> <strong>10 eggs, 8 bacon slices, 8 oz breakfast sausage, 3 oz sharp cheddar, four 10-inch tortillas, no potatoes.</strong> Each burrito receives 2½ eggs, 2 bacon slices, 2 oz sausage and ¾ oz cheese. Optional full 1 oz cheese per burrito if the next batch still needs more melt.</p>
+        <div class="callout">Verdict to test next time: much more sausage, half an extra egg per burrito, ¾–1 oz sharp cheddar, no hash browns, and optional light spicy ranch. <strong>No Greek yogurt.</strong> Revision 2 is a planned adjustment, not yet taste-tested.</div>
+      </section>
+      <section class="panel" id="troubleshooting"><h2>Troubleshooting & chef's scoring</h2>
+        <ul><li><strong>Still underfilled:</strong> increase sausage or eggs, not potatoes.</li><li><strong>Soggy tortillas:</strong> toast uncovered; keep sauce on the side.</li><li><strong>Dry eggs:</strong> reduce griddle to 300–325°F; stop once fully set but still tender.</li><li><strong>Greasy filling:</strong> drain bacon and sausage before wrapping; reserve only a little fat on the flat-top.</li><li><strong>Sauce overwhelms:</strong> skip sour cream completely or use just a little Cholula.</li><li><strong>Cheese not obvious:</strong> increase from ¾ oz to a full 1 oz per burrito.</li></ul>
+        <h3>Score the next batch / 100</h3><table class="score-table"><tbody><tr><td>Filling flavor and balance</td><td>30</td></tr><tr><td>Bacon and sausage browning</td><td>20</td></tr><tr><td>Egg tenderness</td><td>15</td></tr><tr><td>Tortilla crispness and seal</td><td>15</td></tr><tr><td>Even filling distribution</td><td>10</td></tr><tr><td>Sauce restraint and family preference</td><td>10</td></tr></tbody></table>
+      </section>
+    </div>
+    <aside>
+      <div class="panel"><h3>Plating studio</h3><p>Slice diagonally to show the bacon, sausage and egg filling. Let the cheese melt into the eggs. Place a small ramekin of sauce beside the plate rather than inside the burrito. Serve the kids' portions plain with sauces available separately.</p></div>
+      <div class="panel"><h3>Core skills</h3><p>Flat-top heat control · Bacon fat rendering · Sausage browning · Soft scrambling · Tight wrapping · Tortilla toasting · Sauce restraint</p></div>
+      <div class="panel"><h3>Next cook experiment</h3><p>Make one burrito entirely plain and another with just 2 tsp light spicy ranch on the side. Compare complete bites before deciding whether sauce belongs in the recipe.</p></div>
+    </aside>
+  </div>
+</main>
+<dialog id="kitchenDialog" aria-label="Interactive kitchen mode">
+  <div class="kitchen-header"><span class="eyebrow">Master Chef Academy · Kitchen Mode</span><h2 id="kitchenTitle">Breakfast burritos</h2><p id="kitchenTime">Step 1</p></div>
+  <div class="kitchen-progress"><div id="kitchenProgress" style="width:0"></div></div>
+  <div class="kitchen-content"><h3 id="kitchenStepTitle"></h3><p id="kitchenStepBody"></p><div class="callout" id="kitchenCheck"></div></div>
+  <div class="kitchen-actions"><button id="kitchenBack">Previous</button><span id="kitchenCounter"></span><button class="primary" id="kitchenNext">Next</button><button id="kitchenClose">Close</button></div>
+</dialog>
+<script>
+(()=>{
+  const $=s=>document.querySelector(s);
+  const shopping=$('#shoppingItems'),method=$('#method'),ranch=$('#ranchAmounts'),mayo=$('#mayoAmounts');
+  let n=4,unit='us',idx=0;
+  const fmt=x=>Number.isInteger(x)?String(x):Number(x.toFixed(2)).toString();
+  const f=()=>n/4;
+  const sauces={
+    ranch:[['Mayonnaise',2,'tbsp',30,'g'],['Sour cream',1,'tsp',5,'g'],['Milk',2,'tsp',10,'g'],['Ranch seasoning',.5,'tsp',1.5,'g'],['Smoked paprika',.25,'tsp',.6,'g'],['Chili powder',.125,'tsp',.3,'g'],['Cholula',.25,'tsp',1.25,'mL']],
+    mayo:[['Mayonnaise',2,'tbsp',30,'g'],['Cholula',1,'tsp',5,'mL'],['Garlic powder',.25,'tsp',.6,'g'],['Water as needed',1,'tsp',5,'mL']]
+  };
+  const scaled=(x)=>fmt(x*f());
+  function measures(arr){return '<ul>'+arr.map(([name,a,u,b,v])=>'<li>'+name+': <strong>'+(unit==='us'?scaled(a)+' '+u:scaled(b)+' '+v)+'</strong></li>').join('')+'</ul>'}
+  const tasks=[
+    {t:'Mise, grate cheese and make optional sauce',time:'0:00–0:07',body:()=> 'Preheat Ninja to 350°F. Shred '+scaled(3)+' oz sharp cheddar ('+scaled(85)+' g). Whisk '+scaled(10)+' eggs with a light pinch of salt and pepper. Prepare '+scaled(8)+' bacon slices, '+scaled(8)+' oz sausage and '+n+' large 10-inch tortillas. If desired, make the light spicy ranch from the Sauce Laboratory. Keep it separate.',check:'Cheese is shredded; eggs uniformly whisked; no olive oil spray needed for the bacon. Sauce should taste subtle, not sour-cream-forward.'},
+    {t:'Cook bacon and sausage until browned',time:'0:07–0:17',body:()=> 'At 350°F, cook '+scaled(8)+' bacon slices directly on the griddle until crisp, about 7–10 minutes. Set aside. Brown '+scaled(8)+' oz crumbled sausage, about 5–7 minutes. Pork sausage must reach 160°F. Leave only a thin film of rendered bacon fat.',check:'Bacon has crisp edges; sausage crumbles are deeply browned, not steamed. Avoid excess oil.'},
+    {t:'Gently scramble eggs',time:'0:17–0:23',body:()=> 'Lower temperature to approximately 300–325°F. Pour on '+scaled(10)+' beaten eggs. Gently fold for about 2–4 minutes until fully set yet moist. Chop the bacon.',check:'Eggs are fully cooked but tender, not dry or browned.'},
+    {t:'Warm, fill and roll tortillas',time:'0:23–0:28',body:()=> 'Warm '+n+' tortillas briefly. For each: 2½ eggs worth of scramble, 2 crisp bacon slices, 2 oz sausage and ¾ oz sharp cheddar. Fold sides in, pull near edge over filling, tuck tight and roll. Keep sauce outside.',check:'Four satisfyingly full burritos with sealed sides; no potatoes or sauce inside.'},
+    {t:'Toast seam-side down',time:'0:28–0:34',body:()=> 'At approximately 350°F, set burritos seam-side down for 2–3 minutes until deeply golden, then flip and toast another 2–3 minutes. Keep uncovered so steam does not soften them.',check:'Exterior is golden and crisp, cheese melted, seam sealed.'},
+    {t:'Taste and finish lightly',time:'0:34–0:35',body:()=> 'Rest one minute and slice diagonally. Taste plain first. Try a few dashes of Cholula; if desired compare up to 2 tsp of light spicy ranch on the side. Let the kids choose their own sauce.',check:'The bacon, sausage, egg and cheddar remain dominant. Any sauce is only an accent.'}
+  ];
+  function render(){
+    $('#servings').textContent=n;$('#heroYield').textContent=n+' burritos';
+    const items=[
+      ['Meat & eggs',[['Eggs',scaled(10)+' large'],['Bacon',scaled(8)+' slices'],['Breakfast sausage',unit==='us'?scaled(8)+' oz':scaled(227)+' g']]],
+      ['Dairy & wraps',[['Sharp cheddar',unit==='us'?scaled(3)+' oz':scaled(85)+' g'],['Large flour tortillas',n+' × 10-inch']]],
+      ['Sauce supplies (optional)',[['Mayonnaise','for spicy ranch or garlic mayo'],['Sour cream','only '+(unit==='us'?scaled(1)+' tsp':scaled(5)+' g')+' for light spicy ranch'],['Milk','for thinning'],['Ranch seasoning','dry mix'],['Cholula hot sauce','for all three sauce tests'],['Smoked paprika and chili powder','pantry seasonings']]],
+      ['Pantry',[['Salt and black pepper','to taste'],['Garlic powder','optional'],['Sugar','tiny pinch for the ranch']]]
+    ];
+    shopping.innerHTML=items.map(([group,parts])=>'<h3>'+group+'</h3>'+parts.map(([item,amount])=>'<label class="check"><input type="checkbox"><span><strong>'+item+'</strong> — '+amount+'</span></label>').join('')).join('');
+    ranch.innerHTML=measures(sauces.ranch)+'<p class="subtle">Plus a very small pinch of sugar. Approximate metric equivalents.</p>';
+    mayo.innerHTML=measures(sauces.mayo);
+    method.innerHTML=tasks.map((s,i)=>'<article class="method-step"><header><span class="number">'+(i+1)+'</span><div><small>'+s.time+'</small><h3>'+s.t+'</h3></div></header><p>'+s.body()+'</p><details><summary>Chef checkpoint</summary><p>'+s.check+'</p></details></article>').join('');
+    $('#minus').disabled=n<=2;$('#plus').disabled=n>=12;
+  }
+  $('#minus').onclick=()=>{n=Math.max(2,n-1);render()};
+  $('#plus').onclick=()=>{n=Math.min(12,n+1);render()};
+  $('#units').onchange=e=>{unit=e.target.value;render()};
+  $('#printRecipe').onclick=()=>window.print();
+  const dialog=$('#kitchenDialog');
+  function renderKitchen(){
+    const s=tasks[idx];$('#kitchenTitle').textContent=s.t;$('#kitchenTime').textContent=s.time;$('#kitchenStepTitle').textContent=s.t;$('#kitchenStepBody').textContent=s.body();$('#kitchenCheck').textContent='Chef checkpoint: '+s.check;$('#kitchenCounter').textContent=(idx+1)+' of '+tasks.length;$('#kitchenProgress').style.width=(100*(idx+1)/tasks.length)+'%';$('#kitchenBack').disabled=idx===0;$('#kitchenNext').textContent=idx===tasks.length-1?'Finish':'Next';
+  }
+  $('#startKitchen').onclick=()=>{idx=0;renderKitchen();dialog.showModal()};
+  $('#kitchenBack').onclick=()=>{if(idx>0){idx--;renderKitchen()}};
+  $('#kitchenNext').onclick=()=>{if(idx<tasks.length-1){idx++;renderKitchen()}else dialog.close()};
+  $('#kitchenClose').onclick=()=>dialog.close();
+  render();
+})();
+</script>
+</body>
+</html>
